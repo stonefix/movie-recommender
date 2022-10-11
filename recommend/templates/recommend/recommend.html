@@ -1,0 +1,33 @@
+{% extends 'recommend/base.html'%}
+{% block title %}Рекомендации{% endblock %}
+{% block body %}
+
+<div class="container-fluid">
+	<h2>Рекомендации для тебя</h2>
+</div>
+<hr>
+<br>
+
+	<div class="container-fluid">
+
+   <!-- Здесь мы вытаскиваем из списка рекомендаций movie_list фильмы и выводим-->
+    <div class="row">
+            {% if movie_list %}
+                {% for movie in movie_list %}
+                    <div class="col-md-3 ">
+                        <div class="thumbnail" style="border-radius: 22px 22px 22px 22px;">
+                            <center><h4>{{movie.title}}</h4></center>
+                            <a href="{% url 'detail' movie.id %}">
+                                <img src="{{ movie.movie_logo.url}}" class="img-responsive" 
+                                style="border-radius: 22px 22px 22px 22px;">
+                            </a>
+
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+</div>
+
+{% endblock %}
