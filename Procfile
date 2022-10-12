@@ -1,1 +1,1 @@
-web: gunicorn movie_recommender.wsgi
+web: gunicorn movie_recommender.wsgi --log-file -
