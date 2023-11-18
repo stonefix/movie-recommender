@@ -1,15 +1,14 @@
-from django.contrib.auth import authenticate, login
-from django.contrib.auth import logout
-from django.contrib.auth.models import User
-from django.shortcuts import render, get_object_or_404, redirect
-from .forms import *
-from django.http import Http404
-from .models import Movie, Myrating, MyList
-from django.db.models import Q
-from django.contrib import messages
-from django.http import HttpResponseRedirect
-from django.db.models import Case, When
 import pandas as pd
+from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
+from django.db.models import Case, Q, When
+from django.http import Http404, HttpResponseRedirect
+from django.shortcuts import get_object_or_404, redirect, render
+
+from .forms import *
+from .models import Movie, MyList, Myrating
+
 
 def index(request):
     movies = Movie.objects.all()
@@ -89,7 +88,6 @@ def detail(request, movie_id):
 
 # список фильмов
 def watch(request):
-
     if not request.user.is_authenticated:
         return redirect("login")
     if not request.user.is_active:
@@ -147,7 +145,7 @@ def recommend(request):
     return render(request, 'recommend/recommend.html', context)
 
 # Регистрируем пользователя
-def signUp(request):
+def sign_up(request):
     form = UserForm(request.POST or None)
 
     if form.is_valid():
@@ -156,7 +154,7 @@ def signUp(request):
         password = form.cleaned_data['password']
         
         if User.objects.filter(username=username).exists():
-            return render(request, 'recommend/signUp.html', {'error_message': 'Такой аккаунт уже существует'})
+            return render(request, 'recommend/sign_up.html', {'error_message': 'Такой аккаунт уже существует'})
         else:
             user.set_password(password)
             user.save()
@@ -167,10 +165,10 @@ def signUp(request):
                     login(request, user)
                     return redirect("index")
 
-    return render(request, 'recommend/signUp.html')
+    return render(request, 'recommend/sign_up.html')
 
-# авторизация пользовател
-def Login(request):
+# авторизация пользователя
+def authorization(request):
     if request.method == "POST":
         username = request.POST['username']
         password = request.POST['password']
@@ -187,6 +185,6 @@ def Login(request):
 
     return render(request, 'recommend/login.html')
 
-def Logout(request):
+def logout_with_redirect(request):
     logout(request)
     return redirect("login")
