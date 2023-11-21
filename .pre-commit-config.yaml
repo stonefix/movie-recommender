@@ -4,4 +4,5 @@ repos:
     hooks:
     -   id: end-of-file-fixer
     -   id: check-yaml
+    -   id: flake8
 exclude: 'static/recommend/.*|templates/.*|.github/*'
