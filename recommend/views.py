@@ -20,7 +20,6 @@ def index(request):
 
     return render(request, 'recommend/list.html', {'movies': movies})
 
-# выводим детали фильма
 def detail(request, movie_id):
     if not request.user.is_authenticated:
         return redirect("login")
@@ -59,8 +58,6 @@ def detail(request, movie_id):
                 messages.success(request, "Фильм добавлен в ваш список!")
             else:
                 messages.success(request, "Фильм удален из вашего списка!")
-
-        # Оценивание фильма
         else:
             rate = request.POST['rating']
             if Myrating.objects.all().values().filter(movie_id=movie_id,user=request.user):
@@ -74,7 +71,6 @@ def detail(request, movie_id):
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
     out = list(Myrating.objects.filter(user=request.user.id).values())
 
-    # Показываем рейтинг/оценку на странице о подробностях фильма
     movie_rating = 0
     rate_flag = False
     for each in out:
@@ -86,7 +82,7 @@ def detail(request, movie_id):
     context = {'movies': movies,'movie_rating':movie_rating,'rate_flag':rate_flag,'update':update}
     return render(request, 'recommend/detail.html', context)
 
-# список фильмов
+
 def watch(request):
     if not request.user.is_authenticated:
         return redirect("login")
@@ -110,7 +106,6 @@ def get_similar(movie_name,rating,corrMatrix):
 
 # Рекомендации
 def recommend(request):
- 
     if not request.user.is_authenticated:
         return redirect("login")
     if not request.user.is_active:
@@ -126,7 +121,8 @@ def recommend(request):
 
     userRatings = movie_rating.pivot_table(index=['user_id'],columns=['movie_id'],values='rating')
     userRatings = userRatings.fillna(0,axis=1)
-    corrMatrix = userRatings.corr(method='pearson') # используем корреляцию пирсона для построения матрицы корреляций (рассчитываются зависимости )
+    # используем корреляцию пирсона для построения матрицы корреляций
+    corrMatrix = userRatings.corr(method='pearson')
 
     user = pd.DataFrame(list(Myrating.objects.filter(user=request.user).values())).drop(['user_id','id'],axis=1)
     user_filtered = [tuple(x) for x in user.values]
