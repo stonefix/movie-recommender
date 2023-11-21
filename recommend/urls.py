@@ -11,3 +11,4 @@ urlpatterns = [
     path('watch/', views.watch, name='watch'),
     path('recommend/', views.recommend, name='recommend'),
 ]
+
