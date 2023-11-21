@@ -4,4 +4,4 @@ repos:
     hooks:
     -   id: end-of-file-fixer
     -   id: check-yaml
-exclude: 'static/recommend/*'
+exclude: 'static/recommend/.*|templates/.*|.github/*'
