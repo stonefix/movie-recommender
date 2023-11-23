@@ -11,6 +11,7 @@ numpy==1.18.5
 pandas==1.0.4
 Pillow==7.1.2
 pre-commit==2.21.0
+pylint==2.6.0
 python-dateutil==2.8.1
 pytz==2020.1
 recommend==0.2.2
