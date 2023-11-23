@@ -60,10 +60,10 @@ def detail(request, movie_id):
             if (
                 MyList.objects.all()
                 .values()
-                .filter(movie_id=movie_id,user=request.user)
+                .filter(movie_id=movie_id, user=request.user)
             ):
                 MyList.objects.all().values().filter(
-                    movie_id=movie_id,user=request.user
+                    movie_id=movie_id, user=request.user
                 ).update(watch=update)
             else:
                 q = MyList(user=request.user, movie=movie, watch=update)
@@ -77,10 +77,10 @@ def detail(request, movie_id):
             if (
                 Myrating.objects.all()
                 .values()
-                .filter(movie_id=movie_id,user=request.user)
+                .filter(movie_id=movie_id, user=request.user)
             ):
                 Myrating.objects.all().values().filter(
-                    movie_id=movie_id,user=request.user
+                    movie_id=movie_id, user=request.user
                 ).update(rating=rate)
             else:
                 q = Myrating(user=request.user, movie=movie, rating=rate)
