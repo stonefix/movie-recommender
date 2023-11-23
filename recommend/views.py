@@ -29,7 +29,7 @@ def detail(request, movie_id):
     movie = Movie.objects.get(id=movie_id)
 
     temp = list(
-        MyList.objects.all().values().filter(movie_id=movie_id,user=request.user)
+        MyList.objects.all().values().filter(movie_id=movie_id, user=request.user)
     )
     if temp:
         update = temp[0]["watch"]
@@ -42,13 +42,13 @@ def detail(request, movie_id):
             if (
                 MyList.objects.all()
                 .values()
-                .filter(movie_id=movie_id,user=request.user)
+                .filter(movie_id=movie_id, user=request.user)
             ):
                 MyList.objects.all().values().filter(
-                    movie_id=movie_id,user=request.user
+                    movie_id=movie_id, user=request.user
                 ).update(watch=update)
             else:
-                q = MyList(user=request.user,movie=movie,watch=update)
+                q = MyList(user=request.user, movie=movie, watch=update)
                 q.save()
             if update:
                 messages.success(request, "Фильм добавлен в ваш список!")
@@ -57,10 +57,16 @@ def detail(request, movie_id):
 
         elif "remove" in request.POST:
             update = False
-            if MyList.objects.all().values().filter(movie_id=movie_id,user=request.user):
-                MyList.objects.all().values().filter(movie_id=movie_id,user=request.user).update(watch=update)
+            if (
+                MyList.objects.all()
+                .values()
+                .filter(movie_id=movie_id,user=request.user)
+            ):
+                MyList.objects.all().values().filter(
+                    movie_id=movie_id,user=request.user
+                ).update(watch=update)
             else:
-                q = MyList(user=request.user,movie=movie,watch=update)
+                q = MyList(user=request.user, movie=movie, watch=update)
                 q.save()
             if update:
                 messages.success(request, "Фильм добавлен в ваш список!")
@@ -68,10 +74,16 @@ def detail(request, movie_id):
                 messages.success(request, "Фильм удален из вашего списка!")
         else:
             rate = request.POST["rating"]
-            if Myrating.objects.all().values().filter(movie_id=movie_id,user=request.user):
-                Myrating.objects.all().values().filter(movie_id=movie_id,user=request.user).update(rating=rate)
+            if (
+                Myrating.objects.all()
+                .values()
+                .filter(movie_id=movie_id,user=request.user)
+            ):
+                Myrating.objects.all().values().filter(
+                    movie_id=movie_id,user=request.user
+                ).update(rating=rate)
             else:
-                q=Myrating(user=request.user,movie=movie,rating=rate)
+                q = Myrating(user=request.user, movie=movie, rating=rate)
                 q.save()
 
             messages.success(request, "Оценка добавлена!")
@@ -146,9 +158,9 @@ def recommend(request):
     movie_id_watched = [each[0] for each in user_filtered]
 
     similar_movies = pd.DataFrame()
-    for movie,rating in user_filtered:
+    for movie, rating in user_filtered:
         similar_movies = similar_movies.append(
-            get_similar(movie, rating, corr_matrix), ignore_index = True
+            get_similar(movie, rating, corr_matrix), ignore_index=True
         )
 
     movies_id = list(similar_movies.sum().sort_values(ascending=False).index)
@@ -156,8 +168,8 @@ def recommend(request):
     preserved = Case(
         *[When(pk=pk, then=pos) for pos, pk in enumerate(movies_id_recommend)]
     )
-    movie_list=list(
-        Movie.objects.filter(id__in = movies_id_recommend).order_by(preserved)[:10]
+    movie_list = list(
+        Movie.objects.filter(id__in=movies_id_recommend).order_by(preserved)[:10]
     )
 
     context = {"movie_list": movie_list}
@@ -188,9 +200,7 @@ def sign_up(request):
                     login(request, user)
                     return redirect("index")
 
-    return render(
-        request, "recommend/sign_up.html"
-    )
+    return render(request, "recommend/sign_up.html")
 
 # авторизация пользователя
 def authorization(request):
@@ -207,16 +217,14 @@ def authorization(request):
                 return render(
                     request,
                     "recommend/login.html",
-                    {"error_message": "Ошибка, нету такого аккаунта"}
+                    {"error_message": "Ошибка, нету такого аккаунта"},
                 )
         else:
             return render(
                 request, "recommend/login.html", {"error_message": "Ошибка логина"}
             )
 
-    return render(
-        request, "recommend/login.html"
-    )
+    return render(request, "recommend/login.html")
 
 def logout_with_redirect(request):
     logout(request)
