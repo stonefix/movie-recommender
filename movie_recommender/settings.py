@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "storages",
-    "recommend"
+    "recommend",
 ]
 
 MIDDLEWARE = [
@@ -121,9 +121,9 @@ USE_TZ = True
 if not DEBUG:
     STATIC_ROOT = os.path.join(BASE_DIR, "static")
 STATIC_URL = "/static/"
-STATICFILES_DIRS = ([
+STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
-])
+]
 # STATICFILES_DIRS = ()
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")

@@ -27,8 +27,10 @@ def detail(request, movie_id):
         raise Http404
     movies = get_object_or_404(Movie, id=movie_id)
     movie = Movie.objects.get(id=movie_id)
-    
-    temp = list(MyList.objects.all().values().filter(movie_id=movie_id,user=request.user))
+
+    temp = list(
+        MyList.objects.all().values().filter(movie_id=movie_id,user=request.user)
+    )
     if temp:
         update = temp[0]["watch"]
     else:
@@ -36,23 +38,29 @@ def detail(request, movie_id):
     if request.method == "POST":
         if "watch" in request.POST:
             update = True
- 
-            if MyList.objects.all().values().filter(movie_id=movie_id,user=request.user):
-                MyList.objects.all().values().filter(movie_id=movie_id,user=request.user).update(watch=update)
+
+            if (
+                MyList.objects.all()
+                .values()
+                .filter(movie_id=movie_id,user=request.user)
+            ):
+                MyList.objects.all().values().filter(
+                    movie_id=movie_id,user=request.user
+                ).update(watch=update)
             else:
-                q=MyList(user=request.user,movie=movie,watch=update)
+                q = MyList(user=request.user,movie=movie,watch=update)
                 q.save()
             if update:
                 messages.success(request, "Фильм добавлен в ваш список!")
             else:
                 messages.success(request, "Фильм удален из вашего списка!")
-        
+
         elif "remove" in request.POST:
             update = False
             if MyList.objects.all().values().filter(movie_id=movie_id,user=request.user):
                 MyList.objects.all().values().filter(movie_id=movie_id,user=request.user).update(watch=update)
             else:
-                q=MyList(user=request.user,movie=movie,watch=update)
+                q = MyList(user=request.user,movie=movie,watch=update)
                 q.save()
             if update:
                 messages.success(request, "Фильм добавлен в ваш список!")
@@ -79,7 +87,12 @@ def detail(request, movie_id):
             rate_flag = True
             break
 
-    context = {"movies": movies,"movie_rating":movie_rating,"rate_flag":rate_flag,"update":update}
+    context = {
+        "movies": movies,
+        "movie_rating": movie_rating,
+        "rate_flag": rate_flag,
+        "update": update,
+    }
     return render(request, "recommend/detail.html", context)
 
 
@@ -89,7 +102,7 @@ def watch(request):
     if not request.user.is_active:
         raise Http404
 
-    movies = Movie.objects.filter(mylist__watch=True,mylist__user=request.user)
+    movies = Movie.objects.filter(mylist__watch=True, mylist__user=request.user)
     query = request.GET.get("q")
 
     if query:
@@ -99,8 +112,8 @@ def watch(request):
     return render(request, "recommend/watch.html", {"movies": movies})
 
 # Получаем похожие фильмы из матрицы, на основе пользовательского рейтинга
-def get_similar(movie_name, rating, corrMatrix):
-    similar_ratings = corrMatrix[movie_name]*(rating-2.5)
+def get_similar(movie_name, rating, corr_matrix):
+    similar_ratings = corr_matrix[movie_name] * (rating - 2.5)
     similar_ratings = similar_ratings.sort_values(ascending=False)
     return similar_ratings
 
@@ -112,29 +125,31 @@ def recommend(request):
         raise Http404
 
     movie_rating = pd.DataFrame(list(Myrating.objects.all().values()))
-    new_user = movie_rating.user_id.unique().shape[0] # Берем количество строк
+    new_user = movie_rating.user_id.unique().shape[0]  # Берем количество строк
     current_user_id = request.user.id
     if current_user_id > new_user:
         movie = Movie.objects.get(id=68)
-        q = Myrating(user=request.user,movie=movie,rating=0)
+        q = Myrating(user=request.user, movie=movie, rating=0)
         q.save()
 
-    userRatings = movie_rating.pivot_table(
-        index=["user_id"],columns=["movie_id"],values="rating"
+    user_rating = movie_rating.pivot_table(
+        index=["user_id"], columns=["movie_id"], values="rating"
     )
-    userRatings = userRatings.fillna(0,axis=1)
+    user_rating = user_rating.fillna(0, axis=1)
     # используем корреляцию пирсона для построения матрицы корреляций
-    corrMatrix = userRatings.corr(method="pearson")
+    corr_matrix = user_rating.corr(method="pearson")
 
     user = pd.DataFrame(list(Myrating.objects.filter(user=request.user).values())).drop(
-        ["user_id","id"],axis=1
+        ["user_id", "id"], axis=1
     )
     user_filtered = [tuple(x) for x in user.values]
     movie_id_watched = [each[0] for each in user_filtered]
 
     similar_movies = pd.DataFrame()
     for movie,rating in user_filtered:
-        similar_movies = similar_movies.append(get_similar(movie,rating,corrMatrix),ignore_index = True)
+        similar_movies = similar_movies.append(
+            get_similar(movie, rating, corr_matrix), ignore_index = True
+        )
 
     movies_id = list(similar_movies.sum().sort_values(ascending=False).index)
     movies_id_recommend = [each for each in movies_id if each not in movie_id_watched]
@@ -156,11 +171,11 @@ def sign_up(request):
         user = form.save(commit=False)
         username = form.cleaned_data["username"]
         password = form.cleaned_data["password"]
-        
+
         if User.objects.filter(username=username).exists():
             return render(
-                request, 
-                "recommend/sign_up.html", 
+                request,
+                "recommend/sign_up.html",
                 {"error_message": "Такой аккаунт уже существует"},
             )
         else:
@@ -173,7 +188,9 @@ def sign_up(request):
                     login(request, user)
                     return redirect("index")
 
-    return render(request, "recommend/sign_up.html")
+    return render(
+        request, "recommend/sign_up.html"
+    )
 
 # авторизация пользователя
 def authorization(request):
@@ -188,8 +205,8 @@ def authorization(request):
                 return redirect("index")
             else:
                 return render(
-                    request, 
-                    "recommend/login.html", 
+                    request,
+                    "recommend/login.html",
                     {"error_message": "Ошибка, нету такого аккаунта"}
                 )
         else:
@@ -197,7 +214,9 @@ def authorization(request):
                 request, "recommend/login.html", {"error_message": "Ошибка логина"}
             )
 
-    return render(request, "recommend/login.html")
+    return render(
+        request, "recommend/login.html"
+    )
 
 def logout_with_redirect(request):
     logout(request)

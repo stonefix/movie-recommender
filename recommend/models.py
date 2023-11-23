@@ -16,7 +16,9 @@ class Movie(models.Model):
 class Myrating(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
-    rating = models.IntegerField(default=0, validators=[MaxValueValidator(5), MinValueValidator(0)])
+    rating = models.IntegerField(
+        default=0, validators=[MaxValueValidator(5), MinValueValidator(0)]
+    )
 
 class MyList(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
