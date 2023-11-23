@@ -15,6 +15,5 @@ repos:
     rev: pylint-2.6.0
     hooks:
     -   id: pylint
-        args:
-            - --fail-under=-10
+        language_version: python3.8
 exclude: 'static/recommend/.*|templates/.*|.github/*'
