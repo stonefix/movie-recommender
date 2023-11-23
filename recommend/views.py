@@ -20,6 +20,7 @@ def index(request):
 
     return render(request, "recommend/list.html", {"movies": movies})
 
+
 def detail(request, movie_id):
     if not request.user.is_authenticated:
         return redirect("login")
