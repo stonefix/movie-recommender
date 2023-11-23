@@ -124,11 +124,13 @@ def watch(request):
 
     return render(request, "recommend/watch.html", {"movies": movies})
 
+
 # Получаем похожие фильмы из матрицы, на основе пользовательского рейтинга
 def get_similar(movie_name, rating, corr_matrix):
     similar_ratings = corr_matrix[movie_name] * (rating - 2.5)
     similar_ratings = similar_ratings.sort_values(ascending=False)
     return similar_ratings
+
 
 # Рекомендации
 def recommend(request):
@@ -176,6 +178,7 @@ def recommend(request):
     context = {"movie_list": movie_list}
     return render(request, "recommend/recommend.html", context)
 
+
 # Регистрируем пользователя
 def sign_up(request):
     form = UserForm(request.POST or None)
@@ -203,6 +206,7 @@ def sign_up(request):
 
     return render(request, "recommend/sign_up.html")
 
+
 # авторизация пользователя
 def authorization(request):
     if request.method == "POST":
@@ -226,6 +230,7 @@ def authorization(request):
             )
 
     return render(request, "recommend/login.html")
+
 
 def logout_with_redirect(request):
     logout(request)

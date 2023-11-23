@@ -20,6 +20,7 @@ class Myrating(models.Model):
         default=0, validators=[MaxValueValidator(5), MinValueValidator(0)]
     )
 
+
 class MyList(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
